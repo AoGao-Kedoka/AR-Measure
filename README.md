@@ -8,3 +8,9 @@ The project structure has been designed for future flutter export
 
 ## Limitations
 Currently, the app only allows placing measuring points on detected planes
+
+## Attributions
+- InGameDebugConsole (https://github.com/yasirkula/UnityIngameDebugConsole)
+- Unity Editor Toolbox (https://github.com/arimger/Unity-Editor-Toolbox)
+- Unity-UI-Rounded-Corners (https://github.com/kirevdokimov/Unity-UI-Rounded-Corners)
+- Icons (https://fonts.google.com/icons) 
