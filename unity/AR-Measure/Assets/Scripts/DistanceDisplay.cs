@@ -11,6 +11,9 @@ public class DistanceDisplay : MonoBehaviour
     [SerializeField]
     TMP_Text m_DistanceText;
 
+    /// <summary>
+    /// Reference to the main camera
+    /// </summary>
     private Camera m_Cam;
 
     private void OnEnable()

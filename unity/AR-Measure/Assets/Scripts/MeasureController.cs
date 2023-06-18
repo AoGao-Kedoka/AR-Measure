@@ -11,45 +11,15 @@ public class MeasureController : MonoBehaviour
     [SerializeField]
     private Button m_MeasuringPointButton;
 
-    [Tooltip("Measure point prefab")]
+    [Tooltip("Measure points prefab")]
     [SerializeField]
-    private GameObject m_MeasuringPointPrefab;
+    private GameObject m_MeasuringPointsPrefab;
 
-    [Tooltip("Distance displaying UI")]
-    [SerializeField]
-    private GameObject m_DistanceDisplayingUIPrefab;
-
-    struct MeasuringPair
-    {
-        public Transform m_MeasuringPoint1;
-        public Transform m_MeasuringPoint2;
-
-        public GameObject m_DistanceDisplayer;
-
-        public float Distance()
-        {
-            return Vector3.Distance(m_MeasuringPoint1.position, m_MeasuringPoint2.position);
-        }
-
-        public void DisplayDistance()
-        {
-            if (Distance() <= 0.001f)
-            {
-                m_DistanceDisplayer.SetActive(false);
-            }
-            else
-            {
-                m_DistanceDisplayer.SetActive(true);
-                m_DistanceDisplayer.transform.position = (m_MeasuringPoint1.position + m_MeasuringPoint2.position) / 2 + new Vector3(0, 0.1f, 0);
-                m_DistanceDisplayer.GetComponent<DistanceDisplay>().UpdateText(Distance().ToString("0.00") + "m");
-            }
-        }
-    }
 
     /// <summary>
     /// Container for saving all the measuring points
     /// </summary>
-    private List<MeasuringPair> m_MeasuringPoints = new List<MeasuringPair>();
+    private List<MeasuringPointsManager> m_MeasuringPoints = new List<MeasuringPointsManager>();
 
     /// <summary>
     /// current index
@@ -60,6 +30,7 @@ public class MeasureController : MonoBehaviour
     /// Saving for double click, value only between 0 and 1
     /// </summary>
     private int m_DoubleClick = 0;
+
     private void RegisterButtonClick()
     {
         if (m_DoubleClick < 0 || m_DoubleClick >= 2) { this.LogError("Something wrong with button!!"); }
@@ -93,19 +64,13 @@ public class MeasureController : MonoBehaviour
 
         m_MeasuringPointButton.onClick.AddListener(() =>
         {
-            if (m_PersistantRaycastController.RaycastHit.Count != 0)
+            if (PersistantRayCastController.RaycastHit.Count != 0)
             {
                 if (FirstTimeClick())
                 {
-                    MeasuringPair pair;
-                    pair.m_MeasuringPoint1 = Instantiate(m_MeasuringPointPrefab).transform;
-                    pair.m_MeasuringPoint2 = Instantiate(m_MeasuringPointPrefab).transform;
-                    pair.m_DistanceDisplayer = Instantiate(m_DistanceDisplayingUIPrefab);
-                    pair.m_DistanceDisplayer.SetActive(false);
-                    pair.m_MeasuringPoint1.transform.position = m_PersistantRaycastController.RaycastHit[0].pose.position;
-                    pair.m_MeasuringPoint1.transform.rotation = m_PersistantRaycastController.RaycastHit[0].pose.rotation;
+                    var measuringPoints = Instantiate(m_MeasuringPointsPrefab);
 
-                    m_MeasuringPoints.Add(pair);
+                    m_MeasuringPoints.Add(measuringPoints.GetComponent<MeasuringPointsManager>());
                     m_CurrentMeasuringPointIndex++;
                     RegisterButtonClick();
 
@@ -113,6 +78,7 @@ public class MeasureController : MonoBehaviour
                 } else
                 {
                     RegisterButtonClick();
+                    m_MeasuringPoints[m_CurrentMeasuringPointIndex].StopUpdate();
                     m_PersistantRaycastController.EnablePersistantRaycastIndicator();
                 }
             }
@@ -121,18 +87,15 @@ public class MeasureController : MonoBehaviour
 
     private void Update()
     {
-        if (m_PersistantRaycastController.RaycastHit.Count != 0 && !FirstTimeClick())
-        {
-            Pose pose = m_PersistantRaycastController.RaycastHit[0].pose;
-            var measuringPoint1 = m_MeasuringPoints[m_CurrentMeasuringPointIndex].m_MeasuringPoint1;
-            var measuringPoint2 = m_MeasuringPoints[m_CurrentMeasuringPointIndex].m_MeasuringPoint2;
-            measuringPoint2.position = pose.position;
-            measuringPoint2.rotation = pose.rotation;
+    }
 
-            measuringPoint1.GetComponent<LineRenderer>().SetPosition(0, measuringPoint1.position);
-            measuringPoint1.GetComponent<LineRenderer>().SetPosition(1, measuringPoint2.position);
+    private void InstantiateNormalLine(ARRaycastHit hit)
+    {
+        
+    }
 
-            m_MeasuringPoints[m_CurrentMeasuringPointIndex].DisplayDistance();
-        }
+    private void DeactivateNormalLine(ARRaycastHit hit)
+    {
+
     }
 }

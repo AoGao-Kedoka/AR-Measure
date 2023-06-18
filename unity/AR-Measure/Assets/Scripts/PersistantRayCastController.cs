@@ -15,8 +15,8 @@ public class PersistantRayCastController : MonoBehaviour
     /// <summary>
     /// List of raycast hits
     /// </summary>
-    private List<ARRaycastHit> m_Hits = new List<ARRaycastHit>();
-    public List<ARRaycastHit> RaycastHit { get { return m_Hits; } }
+    private static List<ARRaycastHit> m_Hits = new List<ARRaycastHit>();
+    public static List<ARRaycastHit> RaycastHit { get { return m_Hits; } }
 
     /// <summary>
     /// Indicator for planes
@@ -29,10 +29,16 @@ public class PersistantRayCastController : MonoBehaviour
     /// </summary>
     private bool m_Enabled = true;
 
+    /// <summary>
+    /// Reference to plane manager
+    /// </summary>
+    private static ARPlaneManager m_arPlaneManager;
+
     private void OnEnable()
     {
-         m_RaycastManager = GetComponent<ARRaycastManager>();
-         if (m_RaycastManager == null) { this.LogError("Raycast manager cannot be found"); }
+        m_RaycastManager = GetComponent<ARRaycastManager>();
+        m_arPlaneManager = GetComponent<ARPlaneManager>();
+        if (m_RaycastManager == null) { this.LogError("Raycast manager cannot be found"); }
         m_Indicator.SetActive(true);
     }
 
@@ -50,6 +56,13 @@ public class PersistantRayCastController : MonoBehaviour
         {
             m_Indicator.SetActive(false);
         }
+    }
+
+    public static ARPlane GetCurrentPlane()
+    {
+        if (m_Hits.Count == 0) return null;
+
+        return m_arPlaneManager.GetPlane(m_Hits[0].trackableId);
     }
 
     public void EnablePersistantRaycastIndicator()
