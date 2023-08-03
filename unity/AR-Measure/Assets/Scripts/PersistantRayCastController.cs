@@ -34,6 +34,12 @@ public class PersistantRayCastController : MonoBehaviour
     /// </summary>
     private static ARPlaneManager m_arPlaneManager;
 
+    /// <summary>
+    /// Distance threshold for snapping to the vertical line
+    /// </summary>
+    [SerializeField]
+    private float m_VertSnapThreshold;
+
     private void OnEnable()
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
@@ -45,8 +51,7 @@ public class PersistantRayCastController : MonoBehaviour
 
     private void Update()
     {
-        if (m_RaycastManager.Raycast(new Vector2(Screen.width / 2, Screen.height / 2), m_Hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon)
-            && m_Enabled)
+        if (m_RaycastManager.Raycast(new Vector2(Screen.width / 2, Screen.height / 2), m_Hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon) && m_Enabled)
         {
             m_Indicator.SetActive(true);
             Pose pose = m_Hits[0].pose;
@@ -58,6 +63,7 @@ public class PersistantRayCastController : MonoBehaviour
         }
     }
 
+
     public static ARPlane GetCurrentPlane()
     {
         if (m_Hits.Count == 0) return null;
@@ -65,10 +71,17 @@ public class PersistantRayCastController : MonoBehaviour
         return m_arPlaneManager.GetPlane(m_Hits[0].trackableId);
     }
 
+    /// <summary>
+    /// Enable the persistant raycast
+    /// </summary>
     public void EnablePersistantRaycastIndicator()
     {
         m_Enabled = true;
     }
+
+    /// <summary>
+    /// disable the persistant raycast
+    /// </summary>
     public void DisablePersistantRaycastIndicator()
     {
         m_Enabled = false;

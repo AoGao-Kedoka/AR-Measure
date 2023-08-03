@@ -84,18 +84,4 @@ public class MeasureController : MonoBehaviour
             }
         });
     }
-
-    private void Update()
-    {
-    }
-
-    private void InstantiateNormalLine(ARRaycastHit hit)
-    {
-        
-    }
-
-    private void DeactivateNormalLine(ARRaycastHit hit)
-    {
-
-    }
 }

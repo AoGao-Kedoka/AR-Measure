@@ -190,6 +190,7 @@ MonoBehaviour:
   m_DistanceDisplayer: {fileID: 1262323039539483811}
   m_DistanceLine: {fileID: 1842561494152118168}
   m_NormalLine: {fileID: 5638860969452292621}
+  m_VerticalSnapThreshold: 0.1
 --- !u!120 &1842561494152118168
 LineRenderer:
   serializedVersion: 2
