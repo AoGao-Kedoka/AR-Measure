@@ -9,7 +9,7 @@ using Utils;
 /// First button click: measuringpointsmanager instance instantiated
 /// Second button click: measuringpoint finished
 /// </summary>
-public class MeasuringPointsManager: MonoBehaviour
+public class MeasuringPointsManager : MonoBehaviour
 {
     /// <summary>
     /// Measuring point 1
@@ -47,6 +47,13 @@ public class MeasuringPointsManager: MonoBehaviour
     /// <returns></returns>
     [SerializeField]
     private float m_VerticalSnapThreshold;
+
+    /// <summary>
+    /// whether currently snaps to the verticle line
+    /// </summary>
+    private bool m_Snapping;
+
+    public bool Snapping { get { return m_Snapping; } }
     
     /// <summary>
     /// Distance between points
@@ -98,6 +105,7 @@ public class MeasuringPointsManager: MonoBehaviour
         {
             m_MeasuringPoint2.transform.position = new Vector3(values[1], values[2], values[3]);
             UpdatePointsDistance();
+            m_Snapping = true;
             return;
         }
 
@@ -153,7 +161,6 @@ public class MeasuringPointsManager: MonoBehaviour
         values[4] = cameraPoint.x;
         values[5] = cameraPoint.y;
         values[6] = cameraPoint.z;
-        this.LogLog($"Distance to verticle line: {values[0]}");
 
         return values;
     }

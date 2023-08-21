@@ -64,23 +64,21 @@ public class MeasureController : MonoBehaviour
 
         m_MeasuringPointButton.onClick.AddListener(() =>
         {
-            if (PersistantRayCastController.RaycastHit.Count != 0)
+            if (FirstTimeClick() && PersistantRayCastController.RaycastHit.Count != 0)
             {
-                if (FirstTimeClick())
-                {
-                    var measuringPoints = Instantiate(m_MeasuringPointsPrefab);
+                var measuringPoints = Instantiate(m_MeasuringPointsPrefab);
 
-                    m_MeasuringPoints.Add(measuringPoints.GetComponent<MeasuringPointsManager>());
-                    m_CurrentMeasuringPointIndex++;
-                    RegisterButtonClick();
+                m_MeasuringPoints.Add(measuringPoints.GetComponent<MeasuringPointsManager>());
+                m_CurrentMeasuringPointIndex++;
+                RegisterButtonClick();
 
-                    m_PersistantRaycastController.DisablePersistantRaycastIndicator();
-                } else
-                {
-                    RegisterButtonClick();
-                    m_MeasuringPoints[m_CurrentMeasuringPointIndex].StopUpdate();
-                    m_PersistantRaycastController.EnablePersistantRaycastIndicator();
-                }
+                m_PersistantRaycastController.DisablePersistantRaycastIndicator();
+            } else if (m_MeasuringPoints[m_CurrentMeasuringPointIndex].Snapping == true || 
+                        PersistantRayCastController.RaycastHit.Count != 0)
+            {
+                RegisterButtonClick();
+                m_MeasuringPoints[m_CurrentMeasuringPointIndex].StopUpdate();
+                m_PersistantRaycastController.EnablePersistantRaycastIndicator();
             }
         });
     }
