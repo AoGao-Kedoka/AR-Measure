@@ -103,10 +103,17 @@ public class MeasuringPointsManager : MonoBehaviour
         var values = CalculateDistanceToVerticleLine();
         if (values[0] < m_VerticalSnapThreshold)
         {
+            // snapping to the normal
             m_MeasuringPoint2.transform.position = new Vector3(values[1], values[2], values[3]);
             UpdatePointsDistance();
+            if (!m_Snapping) { AndroidHapticFeedbackManager.HapticFeedback(); }
             m_Snapping = true;
+
             return;
+        } else
+        {
+            if (m_Snapping) { AndroidHapticFeedbackManager.HapticFeedback(); }
+            m_Snapping = false;
         }
 
         if (PersistantRayCastController.RaycastHit.Count != 0)
