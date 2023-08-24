@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using Utils;
@@ -49,7 +50,7 @@ public class MeasuringPointsManager : MonoBehaviour
     private float m_VerticalSnapThreshold;
 
     /// <summary>
-    /// whether currently snaps to the verticle line
+    /// whether currently snaps to the normal line
     /// </summary>
     private bool m_Snapping;
 
@@ -100,7 +101,7 @@ public class MeasuringPointsManager : MonoBehaviour
 
     private void Update()
     {
-        var values = CalculateDistanceToVerticleLine();
+        var values = CalculateDistanceToNormalLine();
         if (values[0] < m_VerticalSnapThreshold)
         {
             // snapping to the normal
@@ -138,25 +139,25 @@ public class MeasuringPointsManager : MonoBehaviour
     /// index 1,2,3 = clostest position of vertical line point
     /// index 4,5,6 = clostest position of the camera point
     /// </returns>
-    private float[] CalculateDistanceToVerticleLine()
+    private float[] CalculateDistanceToNormalLine()
     {
         float[] values = new float[7];
-        Vector3 vertLineDir = transform.up;
+        Vector3 norLineDir = (m_NormalLine.GetPosition(1) - m_NormalLine.GetPosition(0)).normalized;
         Vector3 cameraDir = Camera.main.transform.forward;
 
-        Vector3 cross = Vector3.Cross(vertLineDir, cameraDir);
+        Vector3 cross = Vector3.Cross(norLineDir, cameraDir);
         Vector3 diff = Camera.main.transform.position - m_MeasuringPoint1.transform.position;
 
         // Don't know why this is not working, using temporary solution
         // Vector3 vertLinePoint = m_MeasuringPoint1.transform.position + Vector3.Dot(diff, vertLineDir) / vertLineDir.sqrMagnitude * vertLineDir;
         Vector3 cameraPoint = Camera.main.transform.position + Vector3.Dot(-diff, cameraDir) / cameraDir.sqrMagnitude * cameraDir;
         Vector3 AP = cameraPoint - m_MeasuringPoint1.transform.position;
-        float d = Vector3.Dot(AP, vertLineDir);
-        Vector3 vertLinePoint = m_MeasuringPoint1.transform.position + vertLineDir * d;
+        float d = Vector3.Dot(AP, norLineDir);
+        Vector3 vertLinePoint = m_MeasuringPoint1.transform.position + norLineDir * d;
         
 
 #if UNITY_EDITOR
-        Debug.DrawLine(m_MeasuringPoint1.transform.position, m_MeasuringPoint1.transform.position + vertLineDir * 20);
+        Debug.DrawLine(m_MeasuringPoint1.transform.position, m_MeasuringPoint1.transform.position + norLineDir * 20);
         Debug.DrawLine(Camera.main.transform.position, Camera.main.transform.position + cameraDir * 20);
         Debug.DrawLine(vertLinePoint, cameraPoint, Color.red);
 #endif
