@@ -42,12 +42,17 @@ public class MeasuringPointsManager : MonoBehaviour
     [SerializeField]
     private LineRenderer m_NormalLine;
 
+    private float m_NormalSnapThreshold;
+
     /// <summary>
     /// Snaping behavior of vertical lines
     /// </summary>
     /// <returns></returns>
-    [SerializeField]
-    private float m_VerticalSnapThreshold;
+    public float NormalSnapThreshold
+    {
+        get { return m_NormalSnapThreshold;}
+        set { m_NormalSnapThreshold = value; }
+    }
 
     /// <summary>
     /// whether currently snaps to the normal line
@@ -84,12 +89,8 @@ public class MeasuringPointsManager : MonoBehaviour
 
     private void OnEnable()
     {
-        if (PersistantRayCastController.RaycastHit.Count == 0) { return; }
-        else
-        {
-            m_MeasuringPoint1.transform.position = PersistantRayCastController.RaycastHit[0].pose.position;
-            m_MeasuringPoint1.transform.rotation= PersistantRayCastController.RaycastHit[0].pose.rotation;
-        }
+        m_MeasuringPoint1.transform.position = this.transform.position;
+        m_MeasuringPoint1.transform.rotation = this.transform.rotation;
         m_DistanceLine = GetComponent<LineRenderer>();
         DisplayVerticalLine();
     }
@@ -102,7 +103,7 @@ public class MeasuringPointsManager : MonoBehaviour
     private void Update()
     {
         var values = CalculateDistanceToNormalLine();
-        if (values[0] < m_VerticalSnapThreshold)
+        if (values[0] < m_NormalSnapThreshold)
         {
             // snapping to the normal
             m_MeasuringPoint2.transform.position = new Vector3(values[1], values[2], values[3]);

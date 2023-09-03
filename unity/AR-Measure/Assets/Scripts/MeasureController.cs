@@ -15,7 +15,6 @@ public class MeasureController : MonoBehaviour
     [SerializeField]
     private GameObject m_MeasuringPointsPrefab;
 
-
     /// <summary>
     /// Container for saving all the measuring points
     /// </summary>
@@ -64,22 +63,44 @@ public class MeasureController : MonoBehaviour
 
         m_MeasuringPointButton.onClick.AddListener(() =>
         {
-            if (FirstTimeClick() && PersistantRayCastController.RaycastHit.Count != 0)
+            if (FirstTimeClick())
             {
-                var measuringPoints = Instantiate(m_MeasuringPointsPrefab);
-
-                m_MeasuringPoints.Add(measuringPoints.GetComponent<MeasuringPointsManager>());
-                m_CurrentMeasuringPointIndex++;
-                RegisterButtonClick();
-
-                m_PersistantRaycastController.DisablePersistantRaycastIndicator();
+                HandleFirstClick();
             } else if (m_MeasuringPoints[m_CurrentMeasuringPointIndex].Snapping == true || 
                         PersistantRayCastController.RaycastHit.Count != 0)
             {
-                RegisterButtonClick();
-                m_MeasuringPoints[m_CurrentMeasuringPointIndex].StopUpdate();
-                m_PersistantRaycastController.EnablePersistantRaycastIndicator();
+                HandleSecondClick();
             }
         });
+    }
+
+    /// <summary>
+    /// Logics to handle the first button click
+    /// </summary>
+    private void HandleFirstClick()
+    {
+        var posRot = m_PersistantRaycastController.GetRaycastPoint();
+        if (posRot.pos.Equals(Vector3.negativeInfinity)) return;
+
+        var measuringPoints = Instantiate(m_MeasuringPointsPrefab, posRot.pos, posRot.rot);
+        measuringPoints.GetComponent<MeasuringPointsManager>().NormalSnapThreshold = m_PersistantRaycastController.SnapThreshold;
+        m_PersistantRaycastController.AddSnapingPoint(posRot);
+
+        m_MeasuringPoints.Add(measuringPoints.GetComponent<MeasuringPointsManager>());
+        m_CurrentMeasuringPointIndex++;
+        RegisterButtonClick();
+
+        m_PersistantRaycastController.DisablePersistantRaycastIndicator();
+
+    }
+
+    /// <summary>
+    /// Logics to handle the second button click
+    /// </summary>
+    private void HandleSecondClick()
+    {
+        RegisterButtonClick();
+        m_MeasuringPoints[m_CurrentMeasuringPointIndex].StopUpdate();
+        m_PersistantRaycastController.EnablePersistantRaycastIndicator();
     }
 }
