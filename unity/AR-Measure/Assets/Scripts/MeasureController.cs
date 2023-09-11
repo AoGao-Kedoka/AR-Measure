@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
@@ -10,6 +11,14 @@ public class MeasureController : MonoBehaviour
     [Tooltip("Button for creating measuring point")]
     [SerializeField]
     private Button m_MeasuringPointButton;
+
+    /// <summary>
+    /// Button for creating measuring point
+    /// </summary>
+    public Button MeasuringPointButton
+    {
+        get { return m_MeasuringPointButton; }
+    }
 
     [Tooltip("Measure points prefab")]
     [SerializeField]
@@ -52,10 +61,6 @@ public class MeasureController : MonoBehaviour
     /// </summary>
     PersistantRayCastController m_PersistantRaycastController;
 
-    /// <summary>
-    /// Button for creating measuring point
-    /// </summary>
-    public Button MeasuringPointButton { get { return m_MeasuringPointButton; } }
 
     private void OnEnable()
     {
@@ -67,7 +72,7 @@ public class MeasureController : MonoBehaviour
             {
                 HandleFirstClick();
             } else if (m_MeasuringPoints[m_CurrentMeasuringPointIndex].Snapping == true || 
-                        PersistantRayCastController.RaycastHit.Count != 0)
+                        PersistantRayCastController.RaycastHits.Count != 0)
             {
                 HandleSecondClick();
             }
@@ -100,7 +105,13 @@ public class MeasureController : MonoBehaviour
     private void HandleSecondClick()
     {
         RegisterButtonClick();
-        m_MeasuringPoints[m_CurrentMeasuringPointIndex].StopUpdate();
         m_PersistantRaycastController.EnablePersistantRaycastIndicator();
+
+        var currentMeasuringPoints = m_MeasuringPoints[m_CurrentMeasuringPointIndex];
+        currentMeasuringPoints.StopUpdate();
+        m_PersistantRaycastController.AddSnapingPoint(new PosRot(
+            currentMeasuringPoints.MeasuringPoint2.transform.position,
+            currentMeasuringPoints.MeasuringPoint2.transform.rotation));
+
     }
 }

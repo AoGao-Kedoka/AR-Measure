@@ -12,17 +12,29 @@ using Utils;
 /// </summary>
 public class MeasuringPointsManager : MonoBehaviour
 {
-    /// <summary>
-    /// Measuring point 1
-    /// </summary>
+    [Tooltip("Measuring point 1")]
     [SerializeField]
     GameObject m_MeasuringPoint1;
 
     /// <summary>
-    /// Measuring point 2
+    /// First click measuring point
     /// </summary>
+    public GameObject MeasuringPoint1
+    {
+        get { return m_MeasuringPoint1; }
+    }
+
+    [Tooltip("Measuring point 2")]
     [SerializeField]
     GameObject m_MeasuringPoint2;
+
+    /// <summary>
+    /// Second click measuring point
+    /// </summary>
+    public GameObject MeasuringPoint2
+    {
+        get { return m_MeasuringPoint2; }
+    }
 
     /// <summary>
     /// Prefab for displaying distance
@@ -118,9 +130,9 @@ public class MeasuringPointsManager : MonoBehaviour
             m_Snapping = false;
         }
 
-        if (PersistantRayCastController.RaycastHit.Count != 0)
+        if (PersistantRayCastController.RaycastHits.Count != 0)
         {
-            Pose pose = PersistantRayCastController.RaycastHit[0].pose;
+            Pose pose = PersistantRayCastController.RaycastHits[0].pose;
             m_MeasuringPoint2.transform.position = pose.position;
             m_MeasuringPoint2.transform.rotation = pose.rotation;
             UpdatePointsDistance();

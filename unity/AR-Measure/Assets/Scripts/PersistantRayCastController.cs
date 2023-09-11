@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using Utils;
 
+[System.Serializable]
 public struct PosRot
 {
     public PosRot(Vector3 pos, Quaternion rot)
@@ -26,11 +28,13 @@ public class PersistantRayCastController : MonoBehaviour
     /// List of raycast hits
     /// </summary>
     private static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
-    public static List<ARRaycastHit> RaycastHit { get { return s_Hits; } }
 
-    /// <summary>
-    /// Indicator for planes
-    /// </summary>
+    public static List<ARRaycastHit> RaycastHits 
+    {
+        get { return s_Hits; }
+    }
+
+    [Tooltip("Indicator for planes")]
     [SerializeField]
     private GameObject m_Indicator;
 
@@ -63,7 +67,6 @@ public class PersistantRayCastController : MonoBehaviour
     /// </summary>
     public float SnapThreshold { get { return m_SnapThreshold; } }
 
-
     private void OnEnable()
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
@@ -79,13 +82,23 @@ public class PersistantRayCastController : MonoBehaviour
         {
             m_Indicator.SetActive(true);
             Pose pose = s_Hits[0].pose;
-            m_Indicator.transform.position = pose.position;
-            m_Indicator.transform.rotation = pose.rotation;
+
+            var snapPosRot = CalculateSnappingPoint(pose.position);
+            if (!snapPosRot.pos.Equals(Vector3.negativeInfinity))
+            {
+                m_Indicator.transform.position = snapPosRot.pos;
+                m_Indicator.transform.rotation = snapPosRot.rot;
+                m_CurrentSnapPoint = snapPosRot;
+            } else
+            {
+                m_Indicator.transform.position = pose.position;
+                m_Indicator.transform.rotation = pose.rotation;
+                m_CurrentSnapPoint = new PosRot(Vector3.negativeInfinity, Quaternion.identity);
+            }
         } else
         {
             m_Indicator.SetActive(false);
         }
-        // TODO: Handle snapping point
     }
 
 
@@ -135,9 +148,22 @@ public class PersistantRayCastController : MonoBehaviour
             return new PosRot(Vector3.negativeInfinity, Quaternion.identity); // invalid case
     }
 
-    private PosRot CalculateSnappingPoint()
+    private PosRot CalculateSnappingPoint(Vector3 hitPoint)
     {
-        //TODO
+        foreach(var p in m_SnapPoints)
+        {
+            if (Vector3.Distance(p.pos, hitPoint) < m_SnapThreshold)
+                return p;
+        }
         return new PosRot(Vector3.negativeInfinity, Quaternion.identity); // invalid case
+    }
+
+    [ContextMenu("Debug Snapping points")]
+    private void DebugSnappingPoints()
+    {
+        foreach(var s in m_SnapPoints)
+        {
+            Debug.Log(s.pos);
+        }
     }
 }
