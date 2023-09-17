@@ -89,6 +89,7 @@ public class PersistantRayCastController : MonoBehaviour
                 m_Indicator.transform.position = snapPosRot.pos;
                 m_Indicator.transform.rotation = snapPosRot.rot;
                 m_CurrentSnapPoint = snapPosRot;
+                AndroidHapticFeedbackManager.HapticFeedback();
             } else
             {
                 m_Indicator.transform.position = pose.position;
